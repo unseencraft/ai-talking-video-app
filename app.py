@@ -1,47 +1,33 @@
-import streamlit as st
-import requests
-import openai
+📦 AI Prompt-to-Video Generator (KlingAI-style)
 
-# API keys (अपना key डालना मत भूलना!)
-openai.api_key = "YOUR_OPENAI_API_KEY"
-DID_API_KEY = "YOUR_D-ID_API_KEY"
+Streamlit + Runway Gen-2 Based Backend
 
-def generate_response(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response['choices'][0]['message']['content']
+import streamlit as st import requests import time
 
-def create_talking_video(text):
-    url = "https://api.d-id.com/talks"
-    headers = {
-        "Authorization": f"Bearer {DID_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "script": {
-            "type": "text",
-            "input": text,
-            "provider": {
-                "type": "microsoft",
-                "voice_id": "en-US-JennyNeural"
-            }
-        },
-        "source_url": "https://create-images.d-id.com/ExampleFace.png"
-    }
-    response = requests.post(url, headers=headers, json=data)
-    return response.json().get("result_url", "")
+st.set_page_config(page_title="AI Talking & Moving Video App", layout="centered") st.title("🎬 Prompt-to-Video AI Generator") st.write("Kling AI जैसा AI वीडियो जनरेट करो — Prompt डालो और Body Motion Video पाओ!")
 
-# Streamlit UI
-st.title("🎬 AI Talking Video Generator")
+📥 User Prompt
 
-user_input = st.text_input("👤 Enter your prompt (e.g. A girl is walking and talking):")
-if st.button("🎥 Generate Talking Video"):
-    with st.spinner("Generating..."):
-        reply = generate_response(user_input)
-        video_url = create_talking_video(reply)
-        if video_url:
-            st.video(video_url)
-        else:
-            st.error("❌ Failed to generate video. Try again.")
+prompt = st.text_input("📝 Enter your prompt (e.g. A boy is running and waving):")
+
+📤 Runway API (Use your own key here)
+
+RUNWAY_API_KEY = "Unseencraft" VIDEO_GENERATION_URL = "https://api.runwayml.com/v1/generate"
+
+🔁 Function to send prompt to Runway Gen-2 API (mock for now)
+
+def generate_video(prompt): headers = { "Authorization": f"Bearer {RUNWAY_API_KEY}", "Content-Type": "application/json" } data = { "prompt": prompt, "num_frames": 75, "width": 512, "height": 512, "seed": 42 } # 🔁 Uncomment below to use real Runway API (requires access) # response = requests.post(VIDEO_GENERATION_URL, headers=headers, json=data) # video_url = response.json().get("video_url")
+
+# ⚠️ Mock output for demo
+st.info("⚠️ Real API access needed. Showing sample video.")
+video_url = "https://media.githubusercontent.com/media/runwayml/stable-diffusion/main/example-output.mp4"
+return video_url
+
+🚀 Trigger
+
+if st.button("🎥 Generate Video"): if prompt: with st.spinner("⏳ Generating your KlingAI-style video..."): time.sleep(2) video = generate_video(prompt) if video: st.video(video) else: st.error("❌ Video generation failed. Check API Key or quota.") else: st.warning("🚨 Please enter a prompt first!")
+
+st.markdown("""
+
+👨‍💻 Built by UnseenCraft | Inspired by KlingAI """)
+
